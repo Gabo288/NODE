@@ -1,0 +1,329 @@
+<%- include('./partials/_header') %>
+<%- include('./partials/_navbar') %>
+<div class="title">
+    
+    <h1 style="color: yellow; text-align: center;">
+        <% if (autoridad>2) { %> 
+            ADMINISTRAR USUARIOS
+        <% }else{ %>VER USUARIOS<% } %>
+    </h1>
+</div>
+
+<div style="padding-left: 5%;padding-right: 5%;">
+
+    <div class="d-flex">
+
+        <% if (autoridad>2) { %> 
+        <div class="add_r"style="margin-left: 94%;">
+            <button  class="btn btn-success" id="boton_agregar" popovertarget="agregar" popovertargetaction="toggle">Agregar</button>
+        </div>
+        <% } %>
+    </div><br>
+
+
+    <div id="agregar" popover style="padding: 10px;">
+        <form action="usuarios/add_us" method="post">
+
+            <div class="form-group">
+                Rut:*<br>
+                <input type="text" name='rut' id="rut" placeholder="xxxxxxxx-x">
+            </div>
+
+            <div class="form-group">
+                Nombre:*<br>
+                <input type="text" name="str_nombre" id="str_nombre" placeholder=""><br>
+            </div>
+
+            <div class="form-group">
+                Apellido:*<br>
+                <input type='text' name="str_ap" id='str_ap' placeholder=""><br>
+            </div>
+            <div class="form-group">
+                Correo:*<br>
+                <input type="email" name="mail" id='mail' placeholder="@mail"><br>
+            </div>
+
+            <div class="form-group">
+                Rol empresarial:*<br>
+                <select name="rol" id="rol" class="form-select">
+                    <option value="trabajador">
+                        Trabajador
+                    </option>
+                    <% if (autoridad>4) { %>
+                    <option value="gerente">
+                        Gerente
+                    </option>
+                    <% } %>
+                    <% if (autoridad>5) { %>
+                     
+                        <option value="administrador">Administrador</option>
+                        <option value="ceo">CEO</option>
+                    <% } %>
+                </select>
+            </div>
+
+            <div class="form-group">
+                Dirección:*<br>
+                <input type='text' name="str_dir" id='str_dir'><br>
+            </div>
+            <div class="form-group">
+                Comuna de Residencia:* <br>
+                <select name="id_co" id="id_co" class="form-select">
+                <% if (comunas) { %>
+        
+                    <option value=<%=comunas[0].id_co %>>
+                        Seleccione
+                    </option>
+                    <% for( let i=0; i < comunas.length; i++ ) { %>
+                        <option value=<%=comunas[i].id_co %>>
+                            <%= comunas[i].str_descripcion %>
+                        </option>
+                    <% } %>
+
+                <% } %>
+                </select>
+            </div><br>
+        <button type="submit" class="btn btn-primary form-control">
+            Agregar</button> 
+        
+        </form>
+    </div>
+
+    <div id="container-fluid">
+    
+        <table id="tabla" class="table table-bordered table-hover" >
+        <thead>
+            <tr>
+                <th>Id Usuario</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Correo</th>
+                <th>Cargo</th>
+                <th>Dirección</th>
+                <% if (autoridad>2) { %> 
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                <% } %>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (usuarios) { %>
+            <% for( let i = 0; i < usuarios.length; i++ ) { %>
+                
+                <tr class="table-active">
+                    <td>
+                        <button class="btn btn-secondary" type="button" popovertarget="datos-<%= usuarios[i].id_us %>" popoveraction="toggle">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <%= usuarios[i].id_us %>
+                    </td>
+                        
+                    <td><%= usuarios[i].str_nombre %></td>
+                    <td><%= usuarios[i].str_ap %></td>
+                    <td><%= usuarios[i].mail %></td>
+                    <td><%= usuarios[i].rol %></td>
+                    <td>
+                        <%= usuarios[i].str_dir %>
+                    </td>
+                    
+                    
+                    <% if (autoridad>1) { %>
+                        <td><%= usuarios[i].estado %></td>
+                        <td>
+                            <div class="accordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingOne">
+                                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-<%= usuarios[i].id_us %>" aria-expanded="false" aria-controls="collapse-<%= usuarios[i].id_us %>">
+                                        Acciones
+                                      </button>
+                                    </h2>
+                                    <div id="collapse-<%= usuarios[i].id_us %>" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                      <div class="accordion-body">
+                                        <% if ((autoridad==3&& usuarios[i].rol=='trabajador') || (autoridad==4 && (usuarios[i].rol == 'trabajador' || usuarios[i].rol=='gerente')) || (autoridad>=5 && usuarios[i].rol != 'ceo')) { %>
+                                
+                                            <button class="btn btn-primary form-control bi bi-pencil-square" type="button" popovertarget="editar-<%= usuarios[i].id_us %>" popoveraction="toggle">Editar</button>
+                                            <% if (usuarios[i].estado!='activo') { %>
+                                             
+                                                <a href="usuarios/act/<%= usuarios[i].id_us %>" class="btn btn-warning form-control">Activar</a>
+                                            <% } else { %>
+                                                
+                                                <a href="usuarios/des/<%= usuarios[i].id_us %>" class="btn btn-warning form-control">Desactivar</a>
+                                                <% } %>
+                                            <button class="btn btn-danger form-control" popovertarget="alerta-<%= usuarios[i].id_us %>" popoeraction="toggle">Eliminar</button>
+                                        <% } %>
+                                      </div>
+                                    </div>
+                                  </div>
+                            </div>
+                           
+
+                        </td>
+                        
+                        <% } %>
+                        
+                    </tr>
+                    <div id="alerta-<%= usuarios[i].id_us %>" popover style="text-align: center;">
+                        <h3>¿Seguro que quieres eliminar a <%= usuarios[i].str_nombre %>?</h3>
+                        <a href="usuarios/delete/<%= usuarios[i].id_us %>" class="btn btn-danger">Confirmar</a>
+                    </div>
+                    <div id="editar-<%= usuarios[i].id_us %>" popover style="padding: 10px;">
+                        <form action="usuarios/edit/<%= usuarios[i].id_us %>" method="post" popover id="editar">
+                        <div class="form-group">
+                            Rut: <br>
+                            <input type="text" name="rut" id="rut" value="<%= usuarios[i].rut %>"><br>
+                        </div>
+                        <div class="form-group">
+                            Nombre: <br>
+                            <input type="text" name="str_nombre" id="str_nombre" value="<%= usuarios[i].str_nombre %>"><br>
+                        </div>
+                        
+                        <div class="form-group">
+                            Apellido:<br>
+                            <input type='text' name="str_ap" id='str_ap' value="<%= usuarios[i].str_ap %>"><br>
+                        </div>
+                        
+                        <div class="form-group">
+                            Correo:<br>
+                            <input type="mail" name='mail' id="mail" value="<%= usuarios[i].mail %>">
+                        </div>
+                        
+                        <div class="form-group">
+                            Rol empresarial:<br>
+                            <select name="rol" id="rol" class="form-select" >
+                                <option value="<%= usuarios[i].rol %>">Act: <%= usuarios[i].rol %></option>
+                                <option value="trabajador">
+                                    Trabajador
+                                </option>
+                                <% if (autoridad>3) { %>
+                                    <option value="gerente">Gerente</option>
+                                <% } %>
+                                <% if (autoridad>4) { %>
+                                     
+                                    <option value="administrador">Administrador</option>
+                                    <option value="ceo">CEO</option>
+                                <% } %>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            Dirección:<br>
+                            <input type='text' name="str_dir" id='str_dir' value="<%= usuarios[i].str_dir %>"><br>
+                        </div>
+                        <div class="form-group">
+                            Comuna de Residencia: <br>
+                            <select name="id_co" id="id_co" class="form-select">
+                            <% if (comunas) { %>
+                    
+                                <option value=<%=usuarios[i].id_co %>>
+                                    Act: <%= usuarios[i].str_co %>
+                                </option>
+                                <% for( let i=0; i < comunas.length; i++ ) { %>
+                                    <option value=<%=comunas[i].id_co %>>
+                                        <%= comunas[i].str_descripcion %>
+                                    </option>
+                                <% } %>
+            
+                            <% } %>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            Estado Actual: <br>
+                            <input type="text"name='estado' id="estado" value="<%= usuarios[i].estado %>">
+                        </div>
+                        <div class="form-group">
+                            Almacen Asignado: <br>
+                            <select name="id_bo" id="id_bo" class="form-select">
+                                <% if (usuarios[i].id_bo==0) { %>
+                                 <option value="0">
+                                    Act: Sin Asignar
+                                 </option>
+                                <% }else{%>
+                                    <option value="<%= usuarios[i].id_bo %>">
+                                        Act: <%= usuarios[i].str_bo %>
+                                    </option>
+                                <%} %>
+                                <% for( let i = 0; i < bodegas.length; i++ ) { %>
+                                    <option value="<%= bodegas[i].id_bo %>">
+                                        <%= bodegas[i].str_nombre %>
+                                    </option>
+                                <% } %>
+                            </select>
+                        </div>
+
+                        <br>
+                        <button type="submit" class="btn btn-primary form-control">Confirmar</button>
+                        
+                        </form>
+                    </div>
+
+                    
+            <% }} %>
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>Id Usuario</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Correo</th>
+                <th>Cargo</th>
+                <th>Dirección</th>
+                <% if (autoridad>1) { %> 
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                <% } %>
+            </tr>
+        </tfoot>
+        </table>
+        <% for( let i = 0; i < usuarios.length; i++ ) { %>
+            <div class="accordion" id="datos-<%= usuarios[i].id_us %>" popover style="padding: 10px;">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOne">
+                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                        Datos Personales
+                      </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                      <div class="accordion-body">
+                        - Id Usuario: <%= usuarios[i].id_us %> <br>
+                        - Rut: <%= usuarios[i].rut %> <br>
+                        - Nombre: <%= usuarios[i].str_nombre %> <br>
+                        - Apellido: <%= usuarios[i].str_ap %> <br>
+                        - Correo: <%= usuarios[i].mail %> <br>
+                        - Direccion: <%=  usuarios[i].str_dir %> <br>
+                        - Comuna: <%= usuarios[i].str_co %> <br>
+                        - ID comuna: <%= usuarios[i].id_co %> <br>
+                        - Provincia: <%= usuarios[i].str_pr %> <br>
+                        - ID Provincia: <%= usuarios[i].id_pr %> <br>
+                        - Region: <%= usuarios[i].str_re %> <br>
+                        - ID Region: <%= usuarios[i].id_re %> <br>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingTwo">
+                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        Datos Empresariales
+                      </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                      <div class="accordion-body">
+                        - Bodega Asignada: <%= usuarios[i].str_bo %> - <%= usuarios[i].id_bo %><br>
+                        - Cargo: <%= usuarios[i].rol %> <br>
+                        - Direccion y Comuna de la Bodega: <%= usuarios[i].dir_bo %>,
+                        <%=bodegas[usuarios[i].id_bo - 1].str_co %> <br>
+                        - Provincia y Region de la Bodega: 
+                        <%= bodegas[usuarios[i].id_bo - 1].str_pr %>, <%= bodegas[usuarios[i].id_bo - 1].str_re %><br>
+                        <% if ((autoridad==3&& usuarios[i].rol=='trabajador') || (autoridad==4 && (usuarios[i].rol == 'trabajador' || usuarios[i].rol=='gerente')) || autoridad>=5) { %>
+                            - Ganancias a la Empresa: $<%= usuarios[i].ganancias %> <br>
+                            <% } %>
+                        - Estado Laboral: <%= usuarios[i].estado %> <br>
+                      </div>
+                    </div>
+                  </div>
+                  
+                
+                
+               
+            </div>
+        <% } %>
+    </div>
+</div>

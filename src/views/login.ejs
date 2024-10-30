@@ -1,0 +1,48 @@
+<%- include('./partials/_header') %>
+
+    <div>
+
+        <div class="login">
+            <h1>Iniciar Sesión</h1>
+            <hr style="color: black;">
+
+            <form action="login/verif" method="post">
+                <div class="form-floating" >
+                    <input type="email" class="form-control" id="mail" name="mail" placeholder="name@example.com" style="background-color: white;color: black;">
+                    <label for="mail">Correo Electrónico</label>
+                  </div> <br>
+                  <div class="form-floating">
+                    <input type="password" class="form-control" id="clave" name="clave" placeholder="Password" autocomplete="off" style="background-color: white;color: black;">
+                    <label for="clave">Contraseña</label>
+                  </div><br>
+                
+
+                <button type="submit" class="btn btn-primary form-control">Iniciar Sesión</button>
+                <button type="submit" class="btn" style="background-color: white; color: blue;"><h6>Ingresar como visita</h6></button>
+            </form>
+        </div>
+    </div>
+    <style>
+        .login {
+            padding: 2.5%;
+            text-align: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 15px;
+            background: white;
+            color: black;
+        }
+
+        .login form {
+            padding: 0 40px;
+            box-sizing: border-box;
+        }
+
+        label {
+            color: black;
+        }
+        
+    </style>
+    <%- include('./partials/_footer') %>

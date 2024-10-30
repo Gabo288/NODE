@@ -1,0 +1,190 @@
+<%- include('./partials/_header') %>
+<%- include('./partials/_navbar') %>
+
+
+<div class="title">
+    
+    <h1 style="color: yellow; text-align: center;">
+        <% if (autoridad>=1) { %> 
+            ADMINISTRAR PRODUCTOS
+        <% }else{ %>VER PRODUCTOS<% } %>
+    </h1>
+</div>
+
+<div style="padding-left: 5%;padding-right: 5%;">
+
+    <div class="d-flex">
+
+        <% if (autoridad>=2) { %> 
+        <div class="add"style="margin-left: 94%;">
+            <button  class="btn btn-success" id="boton_agregar" popovertarget="agregar" popovertargetaction="toggle">Agregar</button>
+        </div>
+        <% } %>
+    </div><br>
+
+
+    <div id="agregar" popover style="padding: 10px;">
+        <form action="productos/add_product" method="post">
+
+
+            <div class="form-group">
+                Nombre:*<br>
+                <input type="text" name="str_nombre" id="str_nombre" placeholder=""><br>
+            </div>
+            <div class="form-group">
+                Marca:*<br>
+                <input type="text" name="marca" id="marca" placeholder=""><br>
+            </div>
+            <div class="form-group">
+                Tipo:*<br>
+                <input type="text" name="tipo" id="tipo" placeholder=""><br>
+            </div>
+
+             <br>
+        <button type="submit" class="btn btn-primary form-control">
+            Agregar</button>
+        
+        </form>
+    </div>
+
+    <div id="container-fluid">
+    
+        <table id="tabla" class="table table-bordered table-hover" >
+        <thead>
+            <tr>
+                <th>ID Producto</th>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Marca</th>
+                <th>Unidades Disponibles</th>
+                <% if (autoridad>=3) { %> 
+                    <th>Acciones</th>
+                <% } %>
+            </tr>
+        </thead>
+        <tbody class="table-active">
+            <% if (productos) { %>
+            <% for( let i = 0; i <productos.length; i++ ) { %>
+                
+                <tr >
+                    <td>
+                        <button class="btn btn-secondary" type="button" popovertarget="datos-<%= productos[i].id_producto %>" popoveraction="toggle">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <%= productos[i].id_producto %>
+                    </td>
+                    <td><%= productos[i].str_nombre %></td>
+                    <td><%= productos[i].tipo %></td>
+                    <td><%= productos[i].marca %></td>
+                    <td><%= productos[i].unidades_totales %></td>
+                    
+                    <% if (autoridad>=3) { %>
+                        <td style="text-align: center;"> 
+                            <input class="btn btn-primary form-control" type="button" value="Editar" popovertarget="editar-<%= productos[i].id_producto %>" popoveraction="toggle">
+
+                        </td>
+                        
+                    <% } %>
+                        
+                </tr>
+                    
+                    <div id="editar-<%= productos[i].id_producto %>" popover style="padding: 10px;">
+                        <form action="productos/edit/<%= productos[i].id_producto %>" method="post" popover id="editar">
+                            <div class="form-group">
+                                Nombre: <br>
+                                <input type="text" name="str_nombre" id="str_nombre" value="<%= productos[i].str_nombre %>"><br>
+                            </div>
+                            <div class="form-group">
+                                Marca:<br>
+                                <input type='text' name="marca" id='marca' value="<%= productos[i].marca %>"><br>
+                            </div>
+                            <div class="form-group">
+                                Tipo: <br>
+                                <input type="text" name="tipo" id="tipo" value="<%= productos[i].tipo %>">
+                            </div>
+                            <br>
+                            <button type="submit" class="btn btn-primary form-control">Confirmar</button>
+                            
+                        </form>
+                    </div>
+
+                    <% }} %>
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>ID Producto</th>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Marca</th>
+                <th>Unidades Disponibles</th>
+                <% if (autoridad>=3) { %> 
+                    <th>Acciones</th>
+                <% } %>
+            </tr>
+        </tfoot>        
+            </table>
+            <% for( let i = 0; i < productos.length; i++ ) { %>
+            
+                <div class="accordion" id="datos-<%= productos[i].id_producto %>" popover style="padding: 10px;">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            Información General</button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#datos-<%= productos[i].id_producto %>">
+                          <div class="accordion-body">
+                            - Id Objeto: <%= productos[i].id_producto %> <br>
+                            - Nombre: <%= productos[i].str_nombre %> <br>
+                            - Tipo: <%= productos[i].tipo %> <br>
+                            - Marca: <%= productos[i].marca %> <br>
+                          </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTwo">
+                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwheadingTwo" aria-expanded="false" aria-controls="collapseTwheadingTwo">
+                            Sotck de Bodegas
+                          </button>
+                        </h2>
+                        <div id="collapseTwheadingTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="datos-<%= productos[i].id_producto %>">
+                          <div class="accordion-body">
+                            <table id="tabla" class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Id Bodega</th>
+                                        <th>Nombre</th>
+                                        <th>Dirección</th>
+                                        <th>Estado</th>
+                                        <th>Unidades Disponibles</th>
+                                        <th>Precio CLP</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% for( let j = 0; j < inventario.length; j++ ) { %>
+                                        
+                                        <% if (inventario[j].id_producto==productos[i].id_producto ) { %>
+                                            <tr>
+                                                <td><%= inventario[j].id_bo %></td>
+                                                <td><%= inventario[j].str_bo %></td>
+                                                <td><%= inventario[j].str_dir %></td>
+                                                <td><%= inventario[j].estado %></td>
+                                                <% if (inventario[j].unidades) { %>
+                                                    <td><%= inventario[j].unidades %></td>
+                                                <% } else { %>
+                                                    <td style="color: red;">Agotado</td>
+                                                 <% } %>
+                                                <td>$<%= inventario[j].precio %></td>
+                                            </tr>
+                                            <% } %>
+                                            <% } %>
+                                </tbody>
+                            </table>
+                          </div>
+                        </div>
+                    </div>
+                   
+                </div>
+            <% } %>
+    </div>
+</div>

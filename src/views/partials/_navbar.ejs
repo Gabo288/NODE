@@ -1,0 +1,90 @@
+<nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="home">
+      <h2>Inicio</h2>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor02"
+      aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarColor02">
+      <div class="navbar-nav me-auto">
+        <% if (autoridad>1) { %>
+
+          <li class="nav-item">
+            <a class="nav-link" href="usuarios">
+              <h2>Usuarios</h2>
+            </a>
+          </li>
+          <% } %>
+            <li class="nav-item">
+              <a class="nav-link" href="bodegas">
+                <h2>Bodegas</h2>
+              </a>
+            </li>
+            <li class="nav-item">
+              
+              <a class="nav-link" href="productos">
+                <h2>Productos</h2>
+              </a>
+            </li>
+            
+            <li class="nav-item">
+              <a class="nav-link" href="inventario">
+                <h2>Inventario</h2>
+              </a>
+              
+            </li>
+            <% if (autoridad>=1) { %>
+             
+              <li class="nav-item">
+                <a class="nav-link" href="boletas">
+                  <h2>Boletas</h2>
+                </a>
+            <% } %>
+                
+            </li>
+            <% if (sujeto[0].rol=='contador' || sujeto[0].rol=='ceo') { %>
+              <li class="nav-item">
+                <a class="nav-link" href="ventas">
+                  <h2>Ventas</h2>
+                </a>
+                
+              </li>
+            <% } %>
+
+
+      </div>
+      
+        <% if (autoridad==0) { %>
+          <div>
+            <a class="btn btn-primary" href="/login">
+              <h6>Iniciar Sesión</h6>
+            </a>
+            </div>
+          <% } else { %>
+            <div>
+              <a class="btn btn-secondary bi bi-cart" href="carrito">
+                <% if (carrito.length) { %>
+                 
+                  (<%= carrito.length %>)
+                  <% } %>
+                </a>
+            </div>
+            <div>
+
+              <a class="user-toggler btn btn-primary form-control" href="perfil" type="button">
+                Ver Perfil
+                <span class="bi bi-person-square"></span>
+              </a><br>
+              <a class="btn btn-danger" href="/login">
+                <h6>Cerrar Sesión<i class="bi bi-door-open"></i></h6>
+                
+              </a>
+            </div>
+            <% } %>
+      
+    </div>
+  </div>
+</nav>
+<hr>

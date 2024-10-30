@@ -1,0 +1,272 @@
+<%- include('./partials/_header') %>
+<%- include('./partials/_navbar') %>
+
+
+<div class="title">
+    
+    <h1 style="color: yellow; text-align: center;">
+        <% if (autoridad>2) { %> 
+            ADMINISTRAR BODEGAS
+        <% }else{ %>VER BODEGAS<% } %>
+    </h1>
+</div>
+
+
+<div style="padding-left: 5%;padding-right: 5%;">
+
+    <div class="d-flex">
+
+        <% if (autoridad>2) { %> 
+        <div class="add"style="margin-left: 94%;">
+            <button  class="btn btn-success" id="boton_agregar" popovertarget="agregar" popovertargetaction="toggle">Agregar</button>
+        </div>
+        <% } %>
+    </div><br>
+
+
+    <div id="agregar" popover style="padding: 10px;">
+        <form action="usuarios/add_us" method="post">
+
+
+            <div class="form-group">
+                Nombre:*<br>
+                <input type="text" name="str_nombre" id="str_nombre" placeholder=""><br>
+            </div>
+
+            <div class="form-group">
+                Dirección:*<br>
+                <input type='text' name="str_dir" id='str_dir'><br>
+            </div>
+            <div class="form-group">
+                Comuna de Operación:* <br>
+                <select name="id_co" id="id_co" class="form-select">
+                <% if (comunas) { %>
+        
+                    <option value=<%=comunas[0].id_co %>>
+                        Seleccione
+                    </option>
+                    <% for( let i=0; i < comunas.length; i++ ) { %>
+                        <option value=<%=comunas[i].id_co %>>
+                            <%= comunas[i].str_descripcion %>
+                        </option>
+                    <% } %>
+
+                <% } %>
+                </select>
+            </div> <br>
+        <button type="submit" class="btn btn-primary form-control">
+            Agregar</button>
+        
+        </form>
+    </div>
+
+    <div id="container-fluid">
+    
+        <table id="tabla" class="table table-bordered table-hover" >
+        <thead>
+            <tr>
+                <th>Id Bodega</th>
+                <th>Nombre</th>
+                <th>Dirección</th>
+                <th>Estado</th>
+                <% if (autoridad>=4) { %> 
+                    <th>Acciones</th>
+                <% } %>
+            </tr>
+        </thead>
+        <tbody class="table-active">
+            <% if (bodegas) { %>
+            <% for( let i = 0; i < bodegas.length; i++ ) { %>
+                
+                <tr >
+                    <td>
+                        <button class="btn btn-secondary" type="button" popovertarget="datos-<%= bodegas[i].id_bo %>" popoveraction="toggle">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <%= bodegas[i].id_bo %>
+                    </td>
+                        
+                    <td><%= bodegas[i].str_nombre %></td>
+                    <td><%= bodegas[i].str_dir %></td>
+                    <td><%= bodegas[i].estado %></td>
+                    
+                    
+                    <% if (autoridad>=4) { %>
+                        <td> 
+                           <div class="accordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingOne">
+                                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-<%= bodegas[i].id_bo %>" aria-expanded="false" aria-controls="collapse-<%= bodegas[i].id_bo %>">
+                                    Acciones
+                                  </button>
+                                </h2>
+                                <div id="collapse-<%= bodegas[i].id_bo %>" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                  <div class="accordion-body">
+                                    
+                                      <input class="btn btn-primary form-control" type="button" value="Editar" popovertarget="editar-<%= bodegas[i].id_bo %>" popoveraction="toggle"><br>
+                                      <% if (bodegas[i].estado!='activa') { %>
+                                       
+                                          <a href="bodegas/act/<%= bodegas[i].id_bo %>" class="btn btn-warning form-control">Activar</a><br>
+                                      <% } else { %>
+                                          
+                                          <a href="bodegas/des/<%= bodegas[i].id_bo %>" class="btn btn-warning form-control">Desactivar</a> <br>
+                                          <% } %>
+                                      <button class="btn btn-danger form-control" popovertarget="alerta-<%= bodegas[i].id_bo %>" popoeraction="toggle">Eliminar</button>
+                                  </div>
+                                </div>
+                              </div>
+                           </div>
+                                
+                            
+
+                        </td>
+                        
+                    <% } %>
+                        
+                </tr>
+                    <div id="alerta-<%= bodegas[i].id_bo %>" popover style="text-align: center;">
+                        <h3>¿Seguro que quieres eliminar a "<%= bodegas[i].str_nombre %>"?</h3>
+                        <a href="bodegas/delete/<%= bodegas[i].id_bo %>" class="btn btn-danger">Confirmar</a>
+                    </div>
+                    <div id="editar-<%= bodegas[i].id_bo %>" popover style="padding: 10px;">
+                        <form action="bodegas/edit/<%= bodegas[i].id_bo %>" method="post" popover id="editar">
+                        <div class="form-group">
+                            Nombre: <br>
+                            <input type="text" name="str_nombre" id="str_nombre" value="<%= bodegas[i].str_nombre %>"><br>
+                        </div>
+                        <div class="form-group">
+                            Dirección:<br>
+                            <input type='text' name="str_dir" id='str_dir' value="<%= bodegas[i].str_dir %>"><br>
+                        </div>
+                        <div class="form-group">
+                            Comuna de Operacion: <br>
+                            <select name="id_co" id="id_co" class="form-select">
+                            <% if (comunas) { %>
+                    
+                                <option value=<%=bodegas[i].id_co %>>
+                                    Act: <%= bodegas[i].str_co %>
+                                </option>
+                                <% for( let i=0; i < comunas.length; i++ ) { %>
+                                    <option value=<%=comunas[i].id_co %>>
+                                        <%= comunas[i].str_descripcion %>
+                                    </option>
+                                <% } %>
+            
+                            <% } %>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            Estado Actual: <br>
+                            <input type="text"name='estado' id="estado" value="<%= bodegas[i].estado %>">
+                        </div>
+                        
+
+                        <br>
+                        <button type="submit" class="btn btn-primary form-control">Confirmar</button>
+                        
+                        </form>
+                    </div>
+
+                    <% }} %>
+        </tbody>
+            <tfoot>
+                <tr>
+                <th>Id Bodega</th>
+                <th>Nombre</th>
+                <th>Dirección</th>
+                <th>Estado</th>
+                <% if (autoridad>=4) { %> 
+                    <th>Acciones</th>
+                <% } %>
+            </tr></tfoot>
+        </table>
+
+
+            <% for( let i = 0; i < bodegas.length; i++ ) { %>
+            
+                <div class="accordion" id="datos-<%= bodegas[i].id_bo %>" popover style="padding: 10px;">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Información General</button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#datos-<%= bodegas[i].id_bo %>">
+                          <div class="accordion-body">
+                            - Id Bodega: <%= bodegas[i].id_us %> <br>
+                            - Nombre: <%= bodegas[i].str_nombre %> <br>
+                            - Direccion: <%=  bodegas[i].str_dir %> <br>
+                            - Comuna:<%= bodegas[i].str_co %> <br>
+                            - ID comuna: <%= bodegas[i].id_co %> <br>
+                            - Provincia:<%= bodegas[i].str_pr %> <br>
+                            - ID Provincia: <%= bodegas[i].id_pr %> <br>
+                            - Region:<%= bodegas[i].str_re %> <br>
+                            - ID Region: <%= bodegas[i].id_re %> <br>
+                            - Estado Operacional: <%= bodegas[i].estado %>
+                          </div>
+                    </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTwo">
+                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            Lista de Personal:
+                          </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#datos-<%= bodegas[i].id_bo %>">
+                          <div class="accordion-body">
+                            <% for( let j = 0; j < usuarios.length; j++ ) { %>
+                                <% if (usuarios[j].id_bo==bodegas[i].id_bo) { %>
+                                    <%= usuarios[j].rol %> - 
+                                    <%= '\t'+usuarios[j].str_nombre  %>
+                                    <%= usuarios[j].str_ap %>
+                                    <br><% } %>
+                            <% } %>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingThree">
+                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            Inventario
+                          </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="datos-<%= bodegas[i].id_bo %>">
+                          <div class="accordion-body">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID Producto</th>
+                                        <th>Nombre</th>
+                                        <th>Tipo</th>
+                                        <th>Marca</th>
+                                        <th>Unidades Disponibles</th>
+                                        <th>Precio CLP</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-active">
+                                    <% for( let j = 0; j < inventario.length; j++ ) { %>
+                                        <tr>
+                                        
+                                        <% if (inventario[j].id_bo==bodegas[i].id_bo) { %>
+                                                <td><%= inventario[j].id_in %></td>
+                                                <td><%= inventario[j].str_in %></td>
+                                                <td><%= inventario[j].tipo %></td>
+                                                <td><%= inventario[j].marca %></td>
+                                                <% if (inventario[j].unidades) { %>
+                                                    <td><%= inventario[j].unidades %></td>
+                                                <% } else { %>
+                                                    <td style="color: red;">AGOTADO</td>
+                                                 <% } %>
+                                                <td>$<%= inventario[j].precio %></td>
+                                            <% } %>
+                                        </tr>
+                                            <% } %>
+                                </tbody>
+                            </table>
+                          </div>
+                        </div>
+                    </div>
+                   
+                </div>
+            <% } %>
+    </div>
+</div>

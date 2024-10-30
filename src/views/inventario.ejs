@@ -1,0 +1,285 @@
+<%- include('./partials/_header') %>
+<%- include('./partials/_navbar') %>
+
+
+<div class="title">
+    
+    <h1 style="color: yellow; text-align: center;">
+        <% if (autoridad>1) { %> 
+            ADMINISTRAR INVENTARIO
+        <% }else{ %>VER INVENTARIO<% } %>
+    </h1>
+</div>
+<div style="padding-left: 5%;padding-right: 5%;">
+    <div class="d-flex">
+        <% if (autoridad>2) { %> 
+        <div class="add"style="margin-left: 94%;">
+            <button  class="btn btn-success" id="boton_agregar" popovertarget="agregar" popovertargetaction="toggle">Agregar</button>
+        </div>
+        <% } %>
+    </div><br>
+
+    <div id="agregar" popover style="padding: 10px;">
+        <form action="usuarios/add_in" method="post">
+
+            <div class="form-group">
+                Producto a Agregar:* <br>
+                <select name="id_producto" id="id_producto" class="form-select">
+                <% if (productos) { %>
+        
+                    <option value=<%=productos[0].id_producto %>>
+                        Seleccione
+                    </option>
+                    <% for( let i=0; i < productos.length; i++ ) { %>
+                        <option value=<%=productos[i].id_producto %>>
+                            <%= productos[i].str_nombre %>
+                        </option>
+                    <% } %>
+
+                <% } %>
+                </select>
+            </div>
+
+            <div class="form-group">
+                Unidades:*<br>
+                <input type="number" name="unidades" id="unidades" min="0" placeholder="0"><br>
+            </div>
+            <div class="form-group">
+                Precio:*<br>
+                $<input type="number" name="precio" id="precio" min="0" placeholder="0"><br>
+            </div>
+
+            <div class="form-group">
+                Bodega Dirigida:* <br>
+                <select name="id_bo" id="id_bo" class="form-select">
+                <% if (bodegas) { %>
+        
+                    <option value='<%=bodegas[0].id_bo %>'>
+                        Seleccione
+                    </option>
+                    <% for( let i=0; i < bodegas.length; i++ ) { %>
+                        <option value=<%=bodegas[i].id_bo %>>
+                            <%= bodegas[i].str_nombre %>
+                        </option>
+                    <% } %>
+
+                <% } %>
+                </select>
+            </div>
+             <br>
+        <button type="submit" class="btn btn-primary form-control">
+            Agregar</button>
+        
+        </form>
+    </div>
+
+    <table id="tabla" class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Id en Bodega</th>
+                <th>Nombre</th>
+                <th>Marca</th>
+                <th>Tipo</th>
+                <th>Unidades</th>
+                <th>Precio</th>
+                <th>Bodega</th>
+                <th>Direccion</th>
+                <% if (autoridad>=1) { %> 
+                    <th>Acciones</th>
+                <% } %>
+            </tr>
+        </thead>
+        <tbody class="table-active">
+            <% if (inventario) { %>
+             <% for( let i = 0; i < inventario.length; i++ ) { %>
+                <tr>
+                    <td><%= inventario[i].id_in %></td>
+                    <td><%= inventario[i].str_in %></td>
+                    <td><%= inventario[i].marca %></td>
+                    <td><%= inventario[i].tipo %></td>
+                    <% if (inventario[i].unidades) { %>
+                        <td><%= inventario[i].unidades %></td>
+                     <% } else { %>
+                      <td style="color: red;">AGOTADO</td>
+                    <% } %>
+                    <td><%= inventario[i].precio %></td>
+                    <td><%= inventario[i].str_bo %></td>
+                    <td><%= inventario[i].str_dir %>, <%= inventario[i].str_co %></td>
+                    <% if (autoridad>=1) { %>
+                     
+                        <td>
+                        <div class="accordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingOne">
+                                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-<%= inventario[i].id_in %>" aria-expanded="false" aria-controls="collapse-<%= inventario[i].id_in %>">
+                                    Acciones
+                                  </button>
+                                </h2>
+                                <div id="collapse-<%= inventario[i].id_in %>" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample" style="text-align: center;">
+                                  <div class="accordion-body">
+                                    
+                                      
+                                      <% if (add_see(carrito,inventario[i])) { %>
+                                       
+                                        <a class="btn btn-secondary form-control" href="carrito">Ver en Carrito</a>
+                                        <% } else { %>
+                                            <button class="btn btn-secondary form-control bi bi-cart-plus" type="button" popoverTarget="agregar_carrito-<%= inventario[i].id_in %>" popoveraction="toggle">Añadir</button>
+                                         
+                                      <% } %>
+                                        
+                                            
+                                    <% if (autoridad>1) { %>
+                                        <input class="btn btn-primary form-control" type="button" value="Editar" popovertarget="editar-<%= inventario[i].id_in %>" popoveraction="toggle"> <br>
+                                        <input data-sell class="btn btn-success form-control" type="button" value="Vender" popovertarget="vender-<%= inventario[i].id_in %>" popoveraction="toggle"> <br>
+                                    
+                                    <% } %>
+                                    <% if (autoridad>2) { %>
+                                        <input class="btn btn-warning form-control" type="button" value="Agregar Unidades" popovertarget="agregar-<%= inventario[i].id_in %>" popoveraction="toggle">
+                                    <% } %>
+                                    <% if (autoridad>3) { %>
+                                        <input class="btn btn-danger form-control" type="button" value="Eliminar" popovertarget="alerta-<%= inventario[i].id_in %>" popoveraction="toggle">
+                                    <% } %>
+                                  </div>
+                                </div>
+                              </div>
+    
+                        </div>
+                            
+                        </td>
+                    <% } %>
+                    
+                    <div id="agregar_carrito-<%= inventario[i].id_in %>" popover style="padding: 10px;">
+                        <form action="inventario/agregar_carrito/<%= inventario[i].id_in %>/<%= inventario[i].precio %>" method="post" popover id="agregar">
+                            <div class="form-group">
+
+                                Nombre: <%= inventario[i].str_in %><br>
+                            </div>
+                            <div class="form-group">
+
+                                Marca: <%= inventario[i].marca %> <br>
+                            </div>
+                            <div class="form-group">
+
+                                Tipo: <%= inventario[i].tipo %><hr>
+                            </div>
+                            <div class="form-group">
+
+                                Unidades Actuales: <%= inventario[i].unidades %><br>
+                            </div>
+                            <div class="form-group">
+
+                                Precio: $<%= inventario[i].precio %>
+                            </div>
+                                <hr>
+                                
+                            <div class="form-group">
+                                Unidades a Agregar:<br>
+                                <input type="number" name="unidades" id="unidades" min="1" max="<%= inventario[i].unidades %>" value="1">
+                            </div>
+
+                            <br>
+                            <button type="submit" class="btn btn-primary form-control">Confirmar</button>
+                            
+                        </form>
+                    </div>
+
+                    <div id="editar-<%= inventario[i].id_in %>" popover style="padding: 10px;">
+                        <form action="inventario/edit/<%= inventario[i].id_in %>/<%= inventario[i].id_producto %>" method="post" popover id="editar">
+                            
+                                Nombre: "<%= inventario[i].str_in %>"<br>
+                            
+                                Marca: "<%= inventario[i].marca %>"<br>
+
+                                Tipo: "<%= inventario[i].tipo %>"<hr>
+                                
+                            <div class="form-group">
+                                Unidades: <br>
+                                <input type="number" name="unidades" id="unidades" value="<%= inventario[i].unidades %>" min="0">
+                            </div>
+                            <div class="form-group">
+                                Precio: <br>
+                                $<input type="number" name="precio" id="precio" value="<%= inventario[i].precio %>" min="0">
+                            </div>
+
+                            <br>
+                            <button type="submit" class="btn btn-primary form-control">Confirmar</button>
+                            
+                        </form>
+                    </div>
+                    <div id="vender-<%= inventario[i].id_in %>" popover style="padding: 10px;">
+                        <form action="inventario/sell/<%= inventario[i].id_in %>/<%= inventario[i].precio %>/<%= inventario[i].id_producto %>" method="post" popover id="vender">
+                            
+                                Nombre: "<%= inventario[i].str_in %>"<br>
+                                Marca: "<%= inventario[i].marca %>"<br>
+                                Tipo: "<%= inventario[i].tipo %>"<hr>
+                                Unidades Actuales: <%= inventario[i].unidades %> <br>
+                                Precio: $<%= inventario[i].precio %> <hr>
+
+                            <div class="form-group">
+                                Unidades Vendidas: <br>
+                                <input type="number" name="unidades" id="unidades" min="0" value="0">
+                            </div>
+
+                            <br>
+                            <button type="submit" class="btn btn-primary form-control">Confirmar</button>
+                            
+                        </form>
+                    </div>
+                    <div id="agregar-<%= inventario[i].id_in %>" popover style="padding: 10px;">
+                        <form action="inventario/agregar/<%= inventario[i].id_in %>/<%= inventario[i].id_producto %>" method="post" popover id="agregar">
+                            
+                                Nombre: "<%= inventario[i].str_in %>"<br>
+                            
+                                Marca: "<%= inventario[i].marca %>"<br>
+
+                                Tipo: "<%= inventario[i].tipo %>"<hr>
+                                Unidades Actuales: <%= inventario[i].unidades %> <br>
+                                Precio: $<%= inventario[i].precio %>
+                                <hr>
+                                
+                            <div class="form-group">
+                                Unidades Añadidas:<br>
+                                <input type="number" name="unidades" id="unidades" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                Precio por Unidad:<br>
+                                $<input type="number" name="precio" id="precio" min="0" value="0">
+                            </div>
+
+                            <br>
+                            <button type="submit" class="btn btn-primary form-control">Confirmar</button>
+                            
+                        </form>
+                    </div>
+                    <div  id="alerta-<%= inventario[i].id_in %>" popover style="text-align: center;">
+                        <h3>¿Seguro que quieres eliminar a "<%= inventario[i].str_in %>"?</h3>
+                        <a href="inventario/delete/<%= inventario[i].id_in %>" class="btn btn-danger">Confirmar</a>
+                    </div>
+                </tr>
+             <% } %>
+            <% } %>
+        </tbody>
+        <tfoot><tr>
+            <th>Id en Bodega</th>
+            <th>Nombre</th>
+            <th>Marca</th>
+            <th>Tipo</th>
+            <th>Unidades</th>
+            <th>Precio</th>
+            <th>Bodega</th>
+            <th>Direccion</th>
+            <% if (autoridad>=1) { %> 
+                <th>Acciones</th>
+            <% } %>
+        </tr></tfoot>
+    </table>
+</div>
+<% function add_see(carrito,inventario) {
+    for (let j = 0; j < carrito.length; j++) {
+        if (carrito[j].id_inv==inventario.id_in) {
+            return true;
+        }
+        
+    }
+    return false
+} %>

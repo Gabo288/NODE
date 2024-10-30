@@ -1,0 +1,99 @@
+<%- include('./partials/_header') %>
+<%- include('./partials/_navbar') %>
+
+
+<div class="title" style="color: yellow; text-align: center;">
+
+    <h1>
+        CARRITO
+    </h1>
+    <h3 style="color: white;">Aquí se hace la verificacion de los productos agregados</h3>
+</div>
+<div style="padding-left: 5%;padding-right: 5%;">
+    <table id="tabla" class="table table-bordered table-hover">
+        <thead>
+            <th></th>
+            <th>Nombre Producto</th>
+            <th>Marca</th>
+            <th>Tipo</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+            <th></th>
+        </thead>
+        <tbody>
+            <% for( let i=0; i < carrito.length; i++ ) { %>
+                <tr>
+                    <td><%= i+1 %></td>
+                    <td><%= carrito[i].str_nombre %></td>
+                    <td><%= carrito[i].marca %></td>
+                    <td><%= carrito[i].tipo %></td>
+                    <td id="precio">
+                        <%= carrito[i].precio %></td>
+                    <td id="cantidad">
+                        <%= carrito[i].cantidad %></td>
+                    <td><button class="btn btn-primary form-control bi bi-pencil-square" type="button"
+                            popovertarget="editar-<%= carrito[i].id_inv %>" popoveraction="toggle">Editar</button>
+                        <a class="btn btn-danger form-control bi bi-cart-x"
+                            href="carrito/delete/<%= carrito[i].id_inv %>">Eliminar</a>
+                        
+                    </td>
+                    
+                </tr>
+                <% } %>
+        </tbody>
+        <tfoot>
+            <tr>
+
+                <th colspan="5">Total:</th>
+
+                <th id="tdTotal"></th>
+                <td><% if (carrito.length) { %>
+                    
+                    <a href="carrito/pagar" class="btn btn-primary form-control bi bi-cart-check">Pagar</a> </td>
+                <% } %> 
+            </tr>
+            <script>
+                window.addEventListener('load', function () {
+                    total();
+                })
+                function total() {
+                    let total = 0;
+                    const tabla = document.getElementById('tabla');
+
+                    for (let i = 1; i < tabla.rows.length - 1; i++) {
+
+
+
+                        let precio = tabla.rows[i].cells[4].innerHTML
+                        let cantidad = tabla.rows[i].cells[5].innerHTML
+                        total += Number(precio) * Number(cantidad);
+
+                    }
+                    const tdTotal = document.getElementById('tdTotal');
+
+                    tdTotal.textContent = '$' + total
+
+                }
+            </script>
+        </tfoot>
+    </table>
+</div>
+
+
+
+
+<% for( let i=0; i < carrito.length; i++ ) { %>
+    <div id="editar-<%= carrito[i].id_inv %>" popover style="padding: 10px;">
+        <form action="carrito/edit/<%= carrito[i].id_inv %>" method="post">
+            Producto: "<%= carrito[i].str_nombre %>"<br>
+            Precio: $<%= carrito[i].precio %>
+            <hr>
+            Unidades: <br>
+            <input type="number" name="unidades" id="unidades" min="0"
+            max="<%= inventario[carrito[i].id_inv-1].unidades %>"
+            value="<%= carrito[i].cantidad %>">
+
+        <br><br> <button type="submit" class="btn btn-primary form-control">Editar</button>
+        </form>
+    </div>
+<% } %>

@@ -1,0 +1,158 @@
+<%- include('./partials/_header') %>
+<%- include('./partials/_navbar') %>
+
+
+<div class="title" style="color: yellow; text-align: center;text-transform: uppercase;"">
+    
+    <h1>
+        <%= tabla %>
+    </h1>
+    <% if (tabla=='boletas') { %>
+        <h3 style="color: white;">
+            Cada usuario registrado puede ver cuando <br>y cuanto ha gastado y la lista de mercancia comprada 
+        </h3>
+        <% } else { %>
+            <h3 style="color: white;">
+                Aqui se ven las boletas de todos los usuarios que han comprado 
+            </h3>
+         
+    <% } %>
+</div>
+
+
+<div style="padding-left: 5%;padding-right: 5%;">
+    <table id="tabla">
+        <thead>
+            <tr>
+                <th>ID Boleta</th>
+                <th>Comprador</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Pagado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for( let i = 0; i < ventas.length; i++ ) { %>
+                <% if ((tabla=='boletas' && ventas[i].id_us==sujeto[0].id_us) || tabla=='ventas') { %>
+                 
+            <tr>
+                <td>
+                <button class="btn btn-secondary" type="button" popovertarget="datos-<%= ventas[i].id_venta %>" popoveraction="toggle">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <%= ventas[i].id_venta %></td>
+                <td><%= ventas[i].str_nombre %> <%= ventas[i].str_ap %></td>
+                <td><%= ventas[i].fecha%></td>
+                <td><%= ventas[i].hora %></td>
+                <td><%= ventas[i].total %></td>
+            </tr>
+                <% } %>
+            <% } %>
+        </tbody>
+        <tfoot>
+            <tr>
+                <th></th>
+                <th colspan="3">Total:</th>
+                <th id="tdTotal"></th>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+<% for( let i = 0; i < ventas.length; i++ ) { %>
+            
+    <div class="accordion" id="datos-<%= ventas[i].id_venta %>" popover style="padding: 10px;">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                Información General</button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#datos-<%= ventas[i].id_venta %>">
+              <div class="accordion-body">
+                - Id Boleta: <%= ventas[i].id_venta %> <br>
+                - Nombre Comprador: <%= ventas[i].str_nombre %> <%= ventas[i].str_ap %><br>
+                - Rut: <%= ventas[i].rut_us %> <br>
+                - Fecha: <%= ventas[i].fecha %> <br>
+                - Hora: <%= ventas[i].hora %> <br>
+              </div>
+            </div>
+        </div>
+        
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTwo">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwheadingTwo" aria-expanded="false" aria-controls="collapseTwheadingTwo">
+               Lista Productos
+              </button>
+            </h2>
+            <div id="collapseTwheadingTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="datos-<%= ventas[i].id_venta %>">
+              <div class="accordion-body">
+                <table id="tabla_<%= i+1 %>" class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Id Inventario/th>
+                            <th>Nombre</th>
+                            <th>Unidades Compradas</th>
+                            <th>Precio CLP</th>
+                            <th>Sub Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for( let j = 0; j < boletas.length; j++ ) { %>
+                            
+                            <% if (boletas[j].id_us==ventas[i].id_us && boletas[j].hora == ventas[i].hora ) { %>
+                                <tr>
+                                    <td><%= boletas[j].id_inv %></td>
+                                    <td><%= boletas[j].str_nombre %> </td>
+                                    <td><%= boletas[j].cantidad %></td>
+                                    <td>$<%= boletas[j].precio %></td>
+                                    <th>$<%= boletas[j].precio * boletas[j].cantidad %></th>
+                                </tr>
+                                <% } %>
+                                <% } %>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="4">Total</th>
+                            
+                            <th>$<%= total(ventas[i],boletas) %></th>
+                        </tr>
+                    </tfoot>
+                    
+                </table>
+              </div>
+            </div>
+        </div>
+       
+    </div>
+<% } %>
+
+<script>
+    window.addEventListener('load', function () {
+        total();
+    })
+    function total() {
+        let total = 0;
+        const tabla = document.getElementById('tabla');
+
+        for (let i = 1; i < tabla.rows.length - 1; i++) {
+
+            let ganancias = tabla.rows[i].cells[4].innerHTML
+            total += Number(ganancias);
+
+        }
+        const tdTotal = document.getElementById('tdTotal');
+
+        tdTotal.textContent = '$' + total
+
+    }
+</script>
+
+
+<% function total(ventas,boletas) {let total=0;for( let j = 0; j < boletas.length; j++ ) {
+    if (boletas[j].id_us==ventas.id_us && boletas[j].hora == ventas.hora ) { 
+        total +=  boletas[j].cantidad * boletas[j].precio
+    
+    }
+}
+
+return total;
+} %>
